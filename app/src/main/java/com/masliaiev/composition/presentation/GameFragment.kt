@@ -26,16 +26,6 @@ class GameFragment : Fragment() {
         ViewModelProvider(this, viewModelFactory)[GameFragmentViewModel::class.java]
     }
 
-    private val tvOptions by lazy {
-        mutableListOf<TextView>().apply {
-            add(binding.tvOption1)
-            add(binding.tvOption2)
-            add(binding.tvOption3)
-            add(binding.tvOption4)
-            add(binding.tvOption5)
-            add(binding.tvOption6)
-        }
-    }
 
     private var _binding: FragmentGameBinding? = null
     private val binding: FragmentGameBinding
@@ -56,46 +46,16 @@ class GameFragment : Fragment() {
         binding.viewModel = viewModel
         binding.lifecycleOwner = viewLifecycleOwner
         observeViewModel()
-        setClickListenersToOptions()
     }
 
     private fun observeViewModel() {
-        viewModel.question.observe(viewLifecycleOwner) {
-            binding.tvSum.text = it.sum.toString()
-            binding.tvLeftNumber.text = it.visibleNumber.toString()
-            for (i in 0 until tvOptions.size) {
-                tvOptions[i].text = it.options[i].toString()
-            }
-        }
-        viewModel.percentOfRightAnswers.observe(viewLifecycleOwner) {
-            binding.progressBar.setProgress(it, true)
-        }
-        viewModel.enoughCount.observe(viewLifecycleOwner) {
-            binding.tvAnswersProgress.setTextColor(getColourByState(it))
-        }
-        viewModel.enoughPercent.observe(viewLifecycleOwner) {
-            val colour = getColourByState(it)
-            binding.progressBar.progressTintList = ColorStateList.valueOf(colour)
-        }
 
-        viewModel.minPercent.observe(viewLifecycleOwner) {
-            binding.progressBar.secondaryProgress = it
-        }
         viewModel.gameResult.observe(viewLifecycleOwner) {
             launchGameFinishedFragment(it)
         }
-        viewModel.progressAnswers.observe(viewLifecycleOwner) {
-            binding.tvAnswersProgress.text = it
-        }
+
     }
 
-    private fun setClickListenersToOptions() {
-        for (tvOption in tvOptions) {
-            tvOption.setOnClickListener {
-                viewModel.chooseAnswer(tvOption.text.toString().toInt())
-            }
-        }
-    }
 
     override fun onDestroyView() {
         super.onDestroyView()
@@ -110,14 +70,6 @@ class GameFragment : Fragment() {
         )
     }
 
-    private fun getColourByState(goodState: Boolean): Int {
-        val colourResId = if (goodState) {
-            android.R.color.holo_green_light
-        } else {
-            android.R.color.holo_red_light
-        }
-        return ContextCompat.getColor(requireContext(), colourResId)
-    }
 
 
 }
